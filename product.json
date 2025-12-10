@@ -1,0 +1,39 @@
+[
+    {
+        "id":1,
+        "name": "L001 LOUNGE CHAIR",
+        "price":200,
+        "imag":"img/2.png",
+        "descrip":"beaux",
+    }
+]
+[
+    {
+        "id":2,
+        "name": "L001 LOUNGE CHAIR",
+        "price":200,
+        "imag":"img/2.png",
+        "descrip":"beaux",
+    }
+]
+[
+    {
+        "id":3,
+        "name": "L001 LOUNGE CHAIR",
+        "price":200,
+        "imag":"img/2.png",
+        "descrip":"beaux",
+    }
+]
+[
+    {
+        "id":4,
+        "name": "L001 LOUNGE CHAIR",
+        "price":200,
+        "imag":"img/2.png",
+        "descrip":"beaux",
+    }
+]
+
+
+

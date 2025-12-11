@@ -684,6 +684,9 @@ font-size: 26px;
     color: #000;
 }
 /* cart page  */
+#cart{
+    overflow-x: auto;
+}
 #cart table{
     width: 100%;
     border-collapse: collapse;

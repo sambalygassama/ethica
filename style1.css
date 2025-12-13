@@ -1155,10 +1155,3 @@ justify-content: center;
     opacity: 0.3;
   }
 }
-
-/* cart page */
-#cart-add {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}

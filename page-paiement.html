@@ -1,100 +1,69 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Paiement</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 480px;
-      margin: 40px auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    label {
-      display: block;
-      margin-top: 16px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="number"], select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    .total {
-      font-size: 1.4em;
-      margin-top: 20px;
-      text-align: right;
-      font-weight: bold;
-    }
-    button {
-      margin-top: 24px;
-      padding: 12px;
-      width: 100%;
-      background-color: #0073e6;
-      border: none;
-      color: white;
-      font-size: 1.1em;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005bb5;
-    }
-    .discount-message {
-      margin-top: 10px;
-      color: green;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement</title>
+<style>
+body { font-family: Arial; max-width:480px; margin:40px auto; padding:20px; border:1px solid #ddd; border-radius:8px; }
+h1 { text-align:center; margin-bottom:24px; }
+label { display:block; margin-top:16px; font-weight:bold; }
+input { width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box; }
+.total { font-size:1.4em; margin-top:20px; text-align:right; font-weight:bold; }
+button { margin-top:24px; padding:12px; width:100%; background-color:#0073e6; border:none; color:white; font-size:1.1em; border-radius:5px; cursor:pointer; }
+button:hover { background-color:#005bb5; }
+.discount-message { margin-top:10px; color:green; font-weight:bold; text-align:center; }
+</style>
 </head>
 <body>
-  <h1>Terminal de Paiement</h1>
 
-  <form id="payment-form">
-    <label for="card-type">Type de carte :</label>
-    <select id="card-type" name="cardType" required>
-      <option value="">-- Sélectionnez une carte --</option>
-      <option value="visa">Visa</option>
-      <option value="mastercard">MasterCard</option>
-      <option value="amex">American Express</option>
-      <option value="paypal">PayPal</option>
-    </select>
+<h1>Terminal de Paiement</h1>
 
-    <label for="card-number">Numéro de carte :</label>
-    <input type="text" id="card-number" name="cardNumber" placeholder="1234 5678 9012 3456" pattern="\d{13,16}" required />
+<form id="payment-form">
+  <label for="coupon">Code de réduction :</label>
+  <input type="text" id="coupon" placeholder="Entrez un code promo (optionnel)">
 
-    <label for="coupon">Code de réduction :</label>
-    <input type="text" id="coupon" name="coupon" placeholder="Entrez un code promo" />
+  <div class="total">Total à payer : <span id="payment-total">$0.00</span></div>
 
-    <div class="total">Total à payer : <span id="payment-total">$0.00</span></div>
+  <button type="submit">Payer maintenant</button>
+</form>
 
-    <input type="hidden" name="totalAmount" id="totalAmount" value="0" />
-
-    <button type="submit">Payer maintenant</button>
-  </form>
-
-  <div id="discount-msg" class="discount-message"></div>
-
-  <script src="style.js"></script>
-</body>
-</html>
-
-
-<p>Total à payer : <span id="payment-total">$0.00</span></p>
+<div id="discount-msg" class="discount-message"></div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const total = localStorage.getItem('cartTotal') || '0.00';
-    document.getElementById('payment-total').textContent = `$${total}`;
+document.addEventListener('DOMContentLoaded', () => {
+  const totalSpan = document.getElementById('payment-total');
+  const discountMsg = document.getElementById('discount-msg');
+
+  // Exemple de panier stocké dans localStorage
+  // Format : [{name:"Produit 1", price:25}, {name:"Produit 2", price:15}]
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  // Calcul automatique du total
+  let total = cart.reduce((sum, item) => sum + item.price, 0);
+  totalSpan.textContent = `$${total.toFixed(2)}`;
+
+  document.getElementById('payment-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const coupon = document.getElementById('coupon').value.trim();
+
+    // Code promo exemple
+    if(coupon === "PROMO10") {
+      total *= 0.9; // 10% de réduction
+      discountMsg.textContent = "Code promo appliqué : 10% de réduction !";
+    } else {
+      discountMsg.textContent = "";
+    }
+
+    alert(`Montant total : $${total.toFixed(2)}. Vous serez redirigé vers Stripe.`);
+
+    // Redirection vers Stripe test
+    const stripeLink = "https://buy.stripe.com/test_5kQ6oGgGucosfl5cxE6EU00";
+    window.location.href = stripeLink;
   });
+});
 </script>
+
+</body>
+</html>

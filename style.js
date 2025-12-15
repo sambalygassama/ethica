@@ -206,3 +206,23 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartDisplay();  // Initial call to fill cart
 });
    
+// la clé d'accès 
+
+const btn = document.getElementById("btn");
+const message = document.getElementById("message");
+
+btn.addEventListener("click", () => {
+    const key = document.getElementById("accessKey").value;
+    const correctKey = "1225";
+
+    if (key === correctKey) {
+        // Sauvegarde de l'accès
+        localStorage.setItem("accessGranted", "true");
+
+        // Redirection
+        window.location.href = "index.html";
+    } else {
+        message.textContent = "Clé incorrecte";
+        message.style.color = "red";
+    }
+});

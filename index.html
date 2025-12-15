@@ -1,3 +1,12 @@
+<button onclick="logout()">Déconnexion</button>
+
+<script>
+function logout() {
+    localStorage.removeItem("accessGranted");
+    window.location.href = "access.html";
+}
+</script>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

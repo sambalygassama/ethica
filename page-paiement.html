@@ -1,70 +1,100 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paiement</title>
-<style>
-body { font-family: Arial; max-width:480px; margin:40px auto; padding:20px; border:1px solid #ddd; border-radius:8px; }
-h1 { text-align:center; margin-bottom:24px; }
-label { display:block; margin-top:16px; font-weight:bold; }
-input, select { width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box; }
-.total { font-size:1.4em; margin-top:20px; text-align:right; font-weight:bold; }
-button { margin-top:24px; padding:12px; width:100%; background-color:#0073e6; border:none; color:white; font-size:1.1em; border-radius:5px; cursor:pointer; }
-button:hover { background-color:#005bb5; }
-.discount-message { margin-top:10px; color:green; font-weight:bold; text-align:center; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paiement</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .total {
+      font-size: 1.4em;
+      margin-top: 20px;
+      text-align: right;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 24px;
+      padding: 12px;
+      width: 100%;
+      background-color: #0073e6;
+      border: none;
+      color: white;
+      font-size: 1.1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    .discount-message {
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
+  <h1>Terminal de Paiement</h1>
 
-<h1>Terminal de Paiement</h1>
+  <form id="payment-form">
+    <label for="card-type">Type de carte :</label>
+    <select id="card-type" name="cardType" required>
+      <option value="">-- Sélectionnez une carte --</option>
+      <option value="visa">Visa</option>
+      <option value="mastercard">MasterCard</option>
+      <option value="amex">American Express</option>
+      <option value="paypal">PayPal</option>
+    </select>
 
-<form id="payment-form">
-  <label for="coupon">Code de réduction :</label>
-  <input type="text" id="coupon" placeholder="Entrez un code promo (optionnel)">
+    <label for="card-number">Numéro de carte :</label>
+    <input type="text" id="card-number" name="cardNumber" placeholder="1234 5678 9012 3456" pattern="\d{13,16}" required />
 
-  <div class="total">Total à payer : <span id="payment-total">$0.00</span></div>
+    <label for="coupon">Code de réduction :</label>
+    <input type="text" id="coupon" name="coupon" placeholder="Entrez un code promo" />
 
-  <button type="submit">Payer maintenant</button>
-</form>
+    <div class="total">Total à payer : <span id="payment-total">$0.00</span></div>
 
-<div id="discount-msg" class="discount-message"></div>
+    <input type="hidden" name="totalAmount" id="totalAmount" value="0" />
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  let total = parseFloat(localStorage.getItem('cartTotal')) || 0;
-  const totalSpan = document.getElementById('payment-total');
-  totalSpan.textContent = `$${total.toFixed(2)}`;
+    <button type="submit">Payer maintenant</button>
+  </form>
 
-  const discountMsg = document.getElementById('discount-msg');
+  <div id="discount-msg" class="discount-message"></div>
 
-  document.getElementById('payment-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const coupon = document.getElementById('coupon').value.trim();
-
-    // Exemple simple de code promo
-    if (coupon === "PROMO10") {
-      total *= 0.9; // 10% de réduction
-      discountMsg.textContent = "Code promo appliqué : 10% de réduction !";
-    } else {
-      discountMsg.textContent = "";
-    }
-
-    const totalFixed = (total * 100).toFixed(0); // Stripe prend le montant en centimes
-
-    // Redirection automatique vers Stripe Checkout
-    // Remplace ce lien test par ton lien live Stripe
-    const stripeLink = `https://buy.stripe.com/test_5kQ6oGgGucosfl5cxE6EU00`;
-    // Stripe ne supporte pas les variables GET pour le montant dans un lien simple test, 
-    // mais pour un vrai paiement tu dois créer une session Stripe côté serveur
-
-    alert(`Montant total : $${total.toFixed(2)}. Vous serez redirigé vers Stripe.`);
-
-    window.location.href = stripeLink;
-  });
-});
-</script>
-
+  <script src="style.js"></script>
 </body>
 </html>
+
+
+<p>Total à payer : <span id="payment-total">$0.00</span></p>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const total = localStorage.getItem('cartTotal') || '0.00';
+    document.getElementById('payment-total').textContent = `$${total}`;
+  });
+</script>

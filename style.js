@@ -209,34 +209,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  const totalSpan = document.getElementById('payment-total');
-  const discountMsg = document.getElementById('discount-msg');
-
-  // Exemple de panier stocké dans localStorage
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  // Calcul automatique du total
-  let total = cart.reduce((sum, item) => sum + item.price, 0);
-  totalSpan.textContent = `$${total.toFixed(2)}`;
-
-  document.getElementById('payment-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const coupon = document.getElementById('coupon').value.trim();
-
-    // Code promo exemple
-    if(coupon === "PROMO10") {
-      total *= 0.9; // 10% de réduction
-      discountMsg.textContent = "Code promo appliqué : 10% de réduction !";
-    } else {
-      discountMsg.textContent = "";
-    }
-
-    alert(`Montant total : $${total.toFixed(2)}. Vous serez redirigé vers Stripe.`);
-
-    // Redirection vers Stripe test
-    const stripeLink = "https://buy.stripe.com/test_5kQ6oGgGucosfl5cxE6EU00";
-    window.location.href = stripeLink;
-  });
-});

@@ -1155,12 +1155,13 @@ justify-content: center;
   100% {
     opacity: 0.3;
   }
+}
   /* cart page */
-  cart-add{
+#cart-add{
     flex-direction: column;
   }
 
-  coupon{
+  #coupon{
     width: 100%;
   }
 }

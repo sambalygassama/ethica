@@ -1157,8 +1157,10 @@ justify-content: center;
   }
   /* cart page */
   cart-add{
-    
     flex-direction: column;
-   
+  }
+
+  coupon{
+    width: 100%;
   }
 }

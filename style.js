@@ -209,7 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// localStorage.setItem('cart', JSON.stringify([
+//   {name:"T-shirt", price:25},
+//   {name:"Chaussures", price:50}
+// ]));
+
 localStorage.setItem('cart', JSON.stringify([
-  {name:"T-shirt", price:25},
-  {name:"Chaussures", price:50}
+  {id:1, title:"T-shirt", price:25, img:"chemin/vers/tshirt.png", quantity:2},
+  {id:2, title:"Chaussures", price:50, img:"chemin/vers/chaussures.png", quantity:1}
 ]));

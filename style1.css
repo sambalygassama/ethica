@@ -686,6 +686,7 @@ font-size: 26px;
 /* cart page  */
 #cart{
     overflow-x: auto;
+
 }
 #cart table{
     width: 100%;
@@ -1153,5 +1154,11 @@ justify-content: center;
   }
   100% {
     opacity: 0.3;
+  }
+  /* cart page */
+  cart-add{
+    
+    flex-direction: column;
+   
   }
 }

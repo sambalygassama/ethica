@@ -209,3 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+localStorage.setItem('cart', JSON.stringify([
+  {name:"T-shirt", price:25},
+  {name:"Chaussures", price:50}
+]));

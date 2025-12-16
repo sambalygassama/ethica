@@ -218,3 +218,25 @@ document.addEventListener('DOMContentLoaded', () => {
 //   {id:1, title:"T-shirt", price:25, img:"chemin/vers/tshirt.png", quantity:2},
 //   {id:2, title:"Chaussures", price:50, img:"chemin/vers/chaussures.png", quantity:1}
 // ]));
+
+
+// === Mobile menu toggle ===
+// bascule la classe `active` sur #navbar quand on clique sur l'icône #bar
+document.addEventListener('DOMContentLoaded', () => {
+  const bar = document.getElementById('bar');
+  const navbar = document.getElementById('navbar');
+  const close = document.getElementById('close');
+
+  if (bar && navbar) {
+    bar.addEventListener('click', () => {
+      navbar.classList.toggle('active');
+    });
+  }
+
+  if (close && navbar) {
+    close.addEventListener('click', (e) => {
+      e.preventDefault();
+      navbar.classList.remove('active');
+    });
+  }
+});

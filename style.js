@@ -26,6 +26,56 @@ function showToast(message) {
   }, 2500);
 }
 
+function getProductPrice(productCard) {
+  const priceText = productCard.querySelector('.des h4')?.innerText || '0';
+  const normalizedPrice = priceText.replace(',', '.').replace(/[^\d.]/g, '');
+  return parseFloat(normalizedPrice) || 0;
+}
+
+function getProductData(productCard) {
+  const title = productCard.querySelector('.des h5')?.innerText?.trim() || 'Produit Ethica';
+  const brand = productCard.querySelector('.des span')?.innerText?.trim() || 'Ethica';
+  const priceText = productCard.querySelector('.des h4')?.innerText?.trim() || 'Prix indisponible';
+  const oldPrice = productCard.querySelector('.promo-price del')?.innerText?.trim() || '';
+  const badge = productCard.querySelector('.promo-badge')?.innerText?.trim() || '';
+  const img = productCard.querySelector('img')?.src || '';
+  const category = productCard.getAttribute('data-category') || brand;
+
+  return {
+    id: img || title,
+    title,
+    brand,
+    price: getProductPrice(productCard),
+    priceText,
+    oldPrice,
+    badge,
+    img,
+    category,
+    quantity: 1
+  };
+}
+
+function addProductToCart(product) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const existingIndex = cart.findIndex(item => item.id === product.id);
+
+  if (existingIndex !== -1) {
+    cart[existingIndex].quantity += product.quantity || 1;
+  } else {
+    cart.push({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      img: product.img,
+      quantity: product.quantity || 1
+    });
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartIconCount(cart);
+  showToast(`${product.title} ajouté au panier`);
+}
+
 // === Ajout au panier ===
 const cartIcons = document.querySelectorAll('.cart');
 
@@ -34,26 +84,8 @@ cartIcons.forEach(icon => {
     e.preventDefault();
 
     const pro = icon.closest('.pro');
-    const product = {
-      id: pro.querySelector('img').src,
-      title: pro.querySelector('.des h5').innerText,
-      price: parseFloat(pro.querySelector('.des h4').innerText.replace('$', '')),
-      img: pro.querySelector('img').src,
-      quantity: 1
-    };
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingIndex = cart.findIndex(item => item.id === product.id);
-
-    if (existingIndex !== -1) {
-      cart[existingIndex].quantity += 1;
-    } else {
-      cart.push(product);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartIconCount(cart);
-    showToast(`${product.title} ajouté au panier`);
+    if (!pro) return;
+    addProductToCart(getProductData(pro));
   });
 });
 
@@ -70,6 +102,10 @@ function updateCartIconCount(cart) {
 document.addEventListener('DOMContentLoaded', () => {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   updateCartIconCount(cart);
+
+  if (!document.querySelector('#cart table')) {
+    return;
+  }
 
   const tbody = document.querySelector('#cart table tbody') || createCartTableBody();
 
@@ -141,6 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   updateCartIconCount(cart);
+
+  if (!document.querySelector('#cart table')) {
+    return;
+  }
 
   const tbody = document.querySelector('#cart table tbody') || createCartTableBody();
 
@@ -240,3 +280,228 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+// ============================================================
+// PROMO PAGE — à coller à la fin de script.js
+// ============================================================
+
+// === Compte à rebours (2 jours) ===
+(function () {
+  const cdH = document.getElementById('cd-h');
+  const cdM = document.getElementById('cd-m');
+  const cdS = document.getElementById('cd-s');
+  if (!cdH) return; // on n'est pas sur la page promo
+
+  const end = new Date();
+  end.setDate(end.getDate() + 2);
+  end.setHours(23, 59, 59, 0);
+
+  function updateCountdown() {
+    const diff = end - new Date();
+    if (diff <= 0) {
+      cdH.textContent = cdM.textContent = cdS.textContent = '00';
+      return;
+    }
+    cdH.textContent = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    cdM.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    cdS.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+})();
+
+// === Filtres catégorie (page promo) ===
+(function () {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  if (!filterBtns.length) return;
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Activer le bouton cliqué
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.getAttribute('data-filter');
+      document.querySelectorAll('.promo-card').forEach(card => {
+        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+})();
+
+// === Wishlist (cœur) — page promo ===
+(function () {
+  document.querySelectorAll('.promo-wishlist').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isLiked = btn.classList.toggle('liked');
+      btn.textContent = isLiked ? '♥' : '♡';
+    });
+  });
+})();
+
+// === Copier le code promo ===
+(function () {
+  const couponBtn = document.getElementById('coupon-btn');
+  if (!couponBtn) return;
+
+  couponBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText('ETHICA20').then(() => {
+      const original = couponBtn.textContent;
+      couponBtn.textContent = '✔ Copié !';
+      setTimeout(() => { couponBtn.textContent = original; }, 2000);
+    });
+  });
+})();
+
+// === Fiche détails produit ===
+(function () {
+  document.querySelectorAll('.pro[onclick]').forEach(productCard => {
+    productCard.removeAttribute('onclick');
+  });
+
+  function deliveryWindow() {
+    const start = new Date();
+    const end = new Date();
+    start.setDate(start.getDate() + 3);
+    end.setDate(end.getDate() + 5);
+
+    return `${start.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} - ${end.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+  }
+
+  function buildDescription(product) {
+    const category = product.category.toLowerCase();
+    if (category.includes('chaussure')) {
+      return 'Chaussures confortables pensées pour un usage quotidien, avec une finition soignée et une silhouette facile à associer.';
+    }
+    if (category.includes('accessoire')) {
+      return 'Accessoire pratique et élégant pour compléter une tenue, sélectionné pour son style et sa facilité d’utilisation.';
+    }
+    return 'Produit sélectionné par Ethica pour un style moderne, agréable à porter au quotidien et facile à intégrer dans votre garde-robe.';
+  }
+
+  function ensureProductModal() {
+    let modal = document.getElementById('product-detail-modal');
+    if (modal) return modal;
+
+    modal = document.createElement('section');
+    modal.id = 'product-detail-modal';
+    modal.className = 'product-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <div class="product-modal__overlay" data-product-close></div>
+      <div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Détails du produit">
+        <button class="product-modal__close" type="button" data-product-close aria-label="Fermer">&times;</button>
+        <div class="product-modal__media">
+          <img alt="">
+        </div>
+        <div class="product-modal__content">
+          <span class="product-modal__brand"></span>
+          <h2></h2>
+          <div class="product-modal__rating">
+            <span class="product-modal__stars">★★★★★</span>
+            <span>4,7 sur 5 · 128 avis</span>
+          </div>
+          <div class="product-modal__prices">
+            <del></del>
+            <strong></strong>
+            <span class="product-modal__deal"></span>
+          </div>
+          <p class="product-modal__description"></p>
+          <div class="product-modal__delivery">
+            <i class="fas fa-shipping-fast"></i>
+            <div>
+              <strong>Livraison estimée</strong>
+              <span></span>
+            </div>
+          </div>
+          <div class="product-modal__info">
+            <div><strong>Retours</strong><span>Retour possible sous 14 jours</span></div>
+            <div><strong>Disponibilité</strong><span>En stock</span></div>
+            <div><strong>Paiement</strong><span>Sécurisé par carte bancaire</span></div>
+          </div>
+          <div class="product-modal__options">
+            <label>
+              Taille
+              <select>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+              </select>
+            </label>
+            <label>
+              Quantité
+              <input type="number" min="1" value="1">
+            </label>
+          </div>
+          <button class="normal product-modal__cart" type="button">Ajouter au panier</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('[data-product-close]').forEach(closeBtn => {
+      closeBtn.addEventListener('click', closeProductModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal.classList.contains('active')) {
+        closeProductModal();
+      }
+    });
+
+    return modal;
+  }
+
+  function openProductModal(productCard) {
+    const product = getProductData(productCard);
+    const modal = ensureProductModal();
+
+    modal.querySelector('.product-modal__media img').src = product.img;
+    modal.querySelector('.product-modal__media img').alt = product.title;
+    modal.querySelector('.product-modal__brand').textContent = product.brand;
+    modal.querySelector('h2').textContent = product.title;
+    modal.querySelector('.product-modal__prices strong').textContent = product.priceText;
+    modal.querySelector('.product-modal__description').textContent = buildDescription(product);
+    modal.querySelector('.product-modal__delivery span').textContent = deliveryWindow();
+
+    const oldPrice = modal.querySelector('.product-modal__prices del');
+    oldPrice.textContent = product.oldPrice;
+    oldPrice.style.display = product.oldPrice ? '' : 'none';
+
+    const deal = modal.querySelector('.product-modal__deal');
+    deal.textContent = product.badge || 'Offre limitée';
+
+    const quantityInput = modal.querySelector('.product-modal__options input');
+    quantityInput.value = 1;
+
+    const addBtn = modal.querySelector('.product-modal__cart');
+    addBtn.onclick = () => {
+      const quantity = Math.max(1, parseInt(quantityInput.value, 10) || 1);
+      addProductToCart({ ...product, quantity });
+      closeProductModal();
+    };
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeProductModal() {
+    const modal = document.getElementById('product-detail-modal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  document.addEventListener('click', (event) => {
+    const productCard = event.target.closest('.pro');
+    if (!productCard) return;
+    if (event.target.closest('a, button, input, select, textarea')) return;
+    openProductModal(productCard);
+  });
+})();
